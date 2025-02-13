@@ -58,14 +58,6 @@ func WithHandlerBufferSize(size int) HandlerOption {
 	}
 }
 
-func checkOrigin(config *websocket.Config, req *http.Request) (err error) {
-	config.Origin, err = websocket.Origin(config, req)
-	if err == nil && config.Origin == nil {
-		return errors.New("null origin")
-	}
-	return err
-}
-
 func NewHandler(targetAddr string, opts ...HandlerOption) *Handler {
 	h := &Handler{
 		defaultTargetAddr: targetAddr,
@@ -82,8 +74,7 @@ func NewHandler(targetAddr string, opts ...HandlerOption) *Handler {
 	h.bufferPool = newBufferPool(h.bufferSize)
 
 	h.wsServer = &websocket.Server{
-		Handler:   h.handleWebSocket,
-		Handshake: checkOrigin,
+		Handler: h.handleWebSocket,
 	}
 
 	return h

@@ -1,3 +1,4 @@
 wst
 **/*.local
 .idea
+client-rs/target
