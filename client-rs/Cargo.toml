@@ -11,3 +11,13 @@ futures-channel = "0.3.31"
 clap = "4.5.29"
 native-tls = "0.2.13"
 url = "2.5.4"
+
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+incremental = false
+panic = "unwind"
+strip = "symbols"
+debug-assertions = false
+overflow-checks = false
