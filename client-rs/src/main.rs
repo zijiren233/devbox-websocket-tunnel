@@ -1,7 +1,10 @@
 use clap::{Arg, Command};
 use futures_util::{future, pin_mut, StreamExt};
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
-use tokio_tungstenite::{connect_async, tungstenite::protocol::Message};
+use tokio_tungstenite::{
+    connect_async, connect_async_tls_with_config, tungstenite::protocol::Message, Connector,
+};
+use url::Url;
 
 #[tokio::main]
 async fn main() {
@@ -24,12 +27,21 @@ async fn main() {
 
     let target = matches.get_one::<String>("target").unwrap();
     let insecure = matches.get_flag("insecure");
+    let url = Url::parse(target).unwrap();
 
     let (stdin_tx, stdin_rx) = futures_channel::mpsc::unbounded();
     tokio::spawn(read_stdin(stdin_tx));
 
-    let (ws_stream, _) = connect_async(target).await.expect("Failed to connect");
-    println!("WebSocket handshake has been successfully completed");
+    let (ws_stream, _) = if url.scheme() == "wss" && insecure {
+        let mut tls = native_tls::TlsConnector::builder();
+        tls.danger_accept_invalid_certs(true);
+        let connector = Some(Connector::NativeTls(tls.build().unwrap()));
+        connect_async_tls_with_config(target, None, false, connector)
+            .await
+            .expect("Failed to connect")
+    } else {
+        connect_async(target).await.expect("Failed to connect")
+    };
 
     let (write, read) = ws_stream.split();
 

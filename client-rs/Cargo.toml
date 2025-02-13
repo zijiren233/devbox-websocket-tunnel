@@ -4,11 +4,10 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-tokio-tungstenite = { version = "0.20.0", features = ["native-tls"] }
-futures-util = "*"
-tokio = { version = "1.0.0", features = ["full"] }
-futures-channel = "0.3"
-clap = "4.0"
-tokio-native-tls = "0.3"
-native-tls = "0.2"
-url = "2.4.0"
+tokio-tungstenite = { version = "0.26.1", features = ["native-tls"] }
+futures-util = "0.3.31"
+tokio = { version = "1.43.0", features = ["rt-multi-thread", "macros", "io-std"] }
+futures-channel = "0.3.31"
+clap = "4.5.29"
+native-tls = "0.2.13"
+url = "2.5.4"
