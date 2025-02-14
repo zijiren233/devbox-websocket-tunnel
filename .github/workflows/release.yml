@@ -108,7 +108,7 @@ jobs:
           args: "--locked --release"
 
       - run: |
-          rm -rf client-rs/target/${{ matrix.platform.target }}/release/client-rs.d
+          rm client-rs/target/${{ matrix.platform.target }}/release/client-rs.d
 
       - name: Upload Binaries
         uses: actions/upload-artifact@v4
