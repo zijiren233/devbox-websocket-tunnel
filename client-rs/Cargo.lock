@@ -245,10 +245,8 @@ dependencies = [
  "futures-util",
  "rustls",
  "tokio",
- "tokio-rustls",
  "tokio-tungstenite",
  "url",
- "webpki-roots",
 ]
 
 [[package]]
