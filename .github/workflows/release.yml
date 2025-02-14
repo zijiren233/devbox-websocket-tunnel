@@ -106,17 +106,12 @@ jobs:
           working-directory: client-rs
           target: ${{ matrix.platform.target }}
           args: "--locked --release"
-          strip: true
-
-      - run:
-          ls -l client-rs
-          ls -l client-rs/target/release/
 
       - name: Upload Binaries
         uses: actions/upload-artifact@v4
         with:
           name: client-rs-${{ matrix.platform.target }}
-          path: client-rs/target/release/client-rs*
+          path: client-rs/target/${{ matrix.platform.target }}/release/client-rs*
 
       - name: Release
         if: ${{ startsWith(github.ref, 'refs/tags/') }}
@@ -130,7 +125,7 @@ jobs:
           name: ${{ github.ref_name }}
           tag_name: ${{ github.ref_name }}
           files: |
-            client-rs/target/release/client-rs*
+            client-rs/target/${{ matrix.platform.target }}/release/client-rs*
 
   release-server:
     runs-on: ubuntu-latest
