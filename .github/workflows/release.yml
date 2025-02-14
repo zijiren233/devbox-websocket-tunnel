@@ -60,7 +60,7 @@ jobs:
       - name: Upload Binaries
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.targets.OS }}-${{ matrix.targets.ARCH }}
+          name: client-${{ matrix.targets.OS }}-${{ matrix.targets.ARCH }}
           path: dist/*
 
       - name: Release
@@ -76,6 +76,57 @@ jobs:
           tag_name: ${{ github.ref_name }}
           files: |
             dist/*
+
+  release-client-rs:
+    strategy:
+      matrix:
+        platform:
+          - runs-on: ubuntu-latest
+            target: x86_64-unknown-linux-musl
+
+          - runs-on: ubuntu-latest
+            target: aarch64-unknown-linux-musl
+
+          - runs-on: windows-latest
+            target: x86_64-pc-windows-msvc
+
+          - runs-on: macOS-latest
+            target: x86_64-apple-darwin
+
+          - runs-on: macos-latest
+            target: aarch64-apple-darwin
+
+    runs-on: ${{ matrix.platform.runs-on }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build binary
+        uses: houseabsolute/actions-rust-cross@v1
+        with:
+          working-directory: client-rs
+          target: ${{ matrix.platform.target }}
+          args: "--locked --release"
+          strip: true
+
+      - name: Upload Binaries
+        uses: actions/upload-artifact@v4
+        with:
+          name: client-rs-${{ matrix.platform.target }}
+          path: client-rs/target/release/client-rs*
+
+      - name: Release
+        if: ${{ startsWith(github.ref, 'refs/tags/') }}
+        uses: softprops/action-gh-release@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          draft: false
+          prerelease: false
+          append_body: false
+          fail_on_unmatched_files: true
+          name: ${{ github.ref_name }}
+          tag_name: ${{ github.ref_name }}
+          files: |
+            client-rs/target/release/client-rs*
 
   release-server:
     runs-on: ubuntu-latest
