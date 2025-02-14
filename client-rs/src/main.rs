@@ -6,7 +6,6 @@ use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio_tungstenite::{
     connect_async, connect_async_tls_with_config, tungstenite::protocol::Message, Connector,
 };
-use url::Url;
 
 #[derive(Debug)]
 struct NoCertVerifier;
@@ -81,12 +80,11 @@ async fn main() {
 
     let target = matches.get_one::<String>("target").unwrap();
     let insecure = matches.get_flag("insecure");
-    let url = Url::parse(target).unwrap();
 
     let (stdin_tx, stdin_rx) = futures_channel::mpsc::unbounded();
     tokio::spawn(read_stdin(stdin_tx));
 
-    let (ws_stream, _) = if url.scheme() == "wss" && insecure {
+    let (ws_stream, _) = if insecure && target.starts_with("wss://") {
         let tls = ClientConfig::builder()
             .dangerous()
             .with_custom_certificate_verifier(Arc::new(NoCertVerifier))
