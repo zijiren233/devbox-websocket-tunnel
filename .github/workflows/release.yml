@@ -108,6 +108,9 @@ jobs:
           args: "--locked --release"
           strip: true
 
+      - run:
+          ls -l client-rs/target/release/
+
       - name: Upload Binaries
         uses: actions/upload-artifact@v4
         with:
