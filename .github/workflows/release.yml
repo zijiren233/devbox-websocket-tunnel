@@ -89,6 +89,7 @@ jobs:
 
           - runs-on: windows-latest
             target: x86_64-pc-windows-msvc
+            EXT: .exe
 
           - runs-on: macOS-latest
             target: x86_64-apple-darwin
@@ -109,16 +110,17 @@ jobs:
 
       - run: |
           rm client-rs/target/${{ matrix.platform.target }}/release/client-rs.d
+          mv client-rs/target/${{ matrix.platform.target }}/release/client-rs${{ matrix.platform.EXT }} client-rs/target/${{ matrix.platform.target }}/release/wst-rs${{ matrix.platform.EXT }}
 
       - name: Upload Binaries
         uses: actions/upload-artifact@v4
         with:
           name: client-rs-${{ matrix.platform.target }}
-          path: client-rs/target/${{ matrix.platform.target }}/release/client-rs*
+          path: client-rs/target/${{ matrix.platform.target }}/release/wst-rs*
 
       - name: tar
         run: |
-          tar -C client-rs/target/${{ matrix.platform.target }}/release -czvf client-rs/target/${{ matrix.platform.target }}/release/client-rs-${{ matrix.platform.target }}.tar.gz client-rs*
+          tar -C client-rs/target/${{ matrix.platform.target }}/release -czvf client-rs/target/${{ matrix.platform.target }}/release/wst-rs-${{ matrix.platform.target }}.tar.gz wst-rs*
 
       - name: Release
         if: ${{ startsWith(github.ref, 'refs/tags/') }}
@@ -132,7 +134,7 @@ jobs:
           name: ${{ github.ref_name }}
           tag_name: ${{ github.ref_name }}
           files: |
-            client-rs/target/${{ matrix.platform.target }}/release/client-rs-${{ matrix.platform.target }}.tar.gz
+            client-rs/target/${{ matrix.platform.target }}/release/wst-rs-${{ matrix.platform.target }}.tar.gz
 
   release-server:
     runs-on: ubuntu-latest
