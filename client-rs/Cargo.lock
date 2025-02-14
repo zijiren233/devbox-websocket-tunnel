@@ -165,6 +165,7 @@ dependencies = [
  "futures-channel",
  "futures-util",
  "native-tls",
+ "openssl",
  "tokio",
  "tokio-tungstenite",
  "url",
