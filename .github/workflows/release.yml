@@ -107,6 +107,9 @@ jobs:
           target: ${{ matrix.platform.target }}
           args: "--locked --release"
 
+      - run: |
+          rm -rf client-rs/target/${{ matrix.platform.target }}/release/client-rs.d
+
       - name: Upload Binaries
         uses: actions/upload-artifact@v4
         with:
